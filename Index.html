@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Overeenkomsten — 5 mei 2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--ink:#1e2235;--ink2:#5a607a;--paper:#f4f6fb;--card:#fff;--border:#dde1ed;
+  --accent:#d64f3b;--accent2:#2d72b8;--success:#1f8c5a;--gold:#c9922a;--cream:#eaecf4;--r:14px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
+
+/* HEADER */
+.hdr{background:var(--ink);color:#fff;padding:.9rem 1rem .75rem;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+.hdr h1{font-size:1.05rem;font-weight:700}
+.hdr-sub{font-size:.7rem;color:rgba(255,255,255,.5);margin-top:.05rem}
+.search-box{position:relative}
+.search-box input{width:100%;padding:.52rem .9rem .52rem 2.3rem;border:none;border-radius:10px;
+  background:rgba(255,255,255,.11);color:#fff;font-size:.9rem;outline:none}
+.search-box input::placeholder{color:rgba(255,255,255,.4)}
+.s-icon{position:absolute;left:.72rem;top:50%;transform:translateY(-50%);opacity:.55;pointer-events:none}
+
+/* FILTERS */
+.filter-bar{display:flex;gap:.45rem;padding:.65rem 1rem;overflow-x:auto;background:var(--card);
+  border-bottom:1px solid var(--border);scrollbar-width:none}
+.filter-bar::-webkit-scrollbar{display:none}
+.filter-chip{flex-shrink:0;padding:.3rem .85rem;border-radius:20px;
+  border:1.5px solid var(--border);background:var(--paper);font-size:.78rem;
+  cursor:pointer;color:var(--ink2);font-family:inherit;white-space:nowrap;transition:all .15s}
+.filter-chip.active{background:var(--accent2);border-color:var(--accent2);color:#fff;font-weight:600}
+
+/* TOTALEN */
+.totalen{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;padding:.8rem 1rem;background:var(--paper)}
+.tot-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  padding:.65rem .85rem;position:relative;overflow:hidden}
+.tot-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.tc-blue::after{background:var(--accent2)}.tc-red::after{background:var(--accent)}
+.tc-green::after{background:var(--success)}.tc-amber::after{background:var(--gold)}
+.tot-label{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2)}
+.tot-value{font-size:1.1rem;font-weight:700;margin-top:.18rem;line-height:1.1}
+.c-red{color:var(--accent)}.c-green{color:var(--success)}.c-blue{color:var(--accent2)}.c-amber{color:var(--gold)}
+
+/* TELREGEL */
+.count-bar{padding:.4rem 1rem;font-size:.75rem;color:var(--ink2);background:var(--paper);border-bottom:1px solid var(--border)}
+
+/* KAARTEN */
+.kaarten{padding:.7rem 1rem;display:flex;flex-direction:column;gap:.55rem}
+.kaart{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  padding:.8rem 1rem;box-shadow:0 1px 5px rgba(30,34,53,.05);cursor:pointer;transition:box-shadow .15s}
+.kaart:active{box-shadow:0 3px 14px rgba(30,34,53,.14)}
+.kaart.exp{border-left:4px solid var(--accent)}.kaart.soon{border-left:4px solid var(--gold)}
+.kaart-top{display:flex;align-items:flex-start;gap:.55rem}
+.k-cat{font-size:.67rem;font-weight:700;padding:.16rem .48rem;border-radius:20px;
+  background:#deeaf9;color:var(--accent2);white-space:nowrap;flex-shrink:0;margin-top:.12rem}
+.k-midden{flex:1;min-width:0}
+.k-soort{font-size:.9rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.k-partij{font-size:.78rem;color:var(--ink2);margin-top:.08rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.k-bedrag{font-size:.97rem;font-weight:700;color:var(--accent);flex-shrink:0;white-space:nowrap;margin-top:.05rem}
+.k-bedrag.groen{color:var(--success)}
+.kaart-footer{display:flex;align-items:center;gap:.45rem;margin-top:.5rem;flex-wrap:wrap}
+.sbadge{font-size:.67rem;font-weight:700;padding:.14rem .48rem;border-radius:20px}
+.sb-g{background:#d4f0e3;color:var(--success)}.sb-r{background:#fde4e0;color:var(--accent)}
+.sb-o{background:#feefd0;color:#a06010}.sb-x{background:var(--cream);color:var(--ink2)}
+.v-lbl{font-size:.72rem;color:var(--ink2)}
+.v-lbl.soon{color:var(--gold);font-weight:600}.v-lbl.exp{color:var(--accent);font-weight:600}
+.k-toelic{font-size:.76rem;color:var(--ink2);margin-top:.38rem;border-top:1px solid var(--cream);padding-top:.38rem;line-height:1.4}
+
+/* DETAIL SHEET */
+.backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;backdrop-filter:blur(3px)}
+.backdrop.open{display:block}
+.sheet{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-radius:20px 20px 0 0;
+  z-index:51;max-height:88vh;overflow-y:auto;
+  transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+  padding-bottom:max(env(safe-area-inset-bottom),16px)}
+.sheet.open{transform:none}
+.s-handle{width:40px;height:4px;background:var(--border);border-radius:4px;margin:10px auto 0}
+.s-hdr{display:flex;align-items:center;justify-content:space-between;
+  padding:.85rem 1.2rem .55rem;border-bottom:1px solid var(--border)}
+.s-hdr h2{font-size:.98rem;font-weight:700}
+.s-close{background:var(--cream);border:none;border-radius:8px;padding:.28rem .65rem;
+  font-size:1rem;cursor:pointer;color:var(--ink2);font-family:inherit}
+.s-body{padding:1rem 1.2rem 1.5rem}
+.dl{display:grid;grid-template-columns:1fr 1.5fr;gap:.28rem .7rem;margin-bottom:.85rem}
+.dt{font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink2);padding-top:.22rem}
+.dd{font-size:.88rem;color:var(--ink);word-break:break-word}
+.dd a{color:var(--accent2)}
+.s-sectie{font-size:.71rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);
+  border-top:1px solid var(--border);padding-top:.7rem;margin-bottom:.45rem}
+.leeg{text-align:center;padding:3rem 1rem;color:var(--ink2);font-size:.9rem}
+.leeg-icon{font-size:2.5rem;margin-bottom:.6rem}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-top">
+    <div><h1>📄 Overeenkomsten</h1><div class="hdr-sub">Stand: 5 mei 2026</div></div>
+  </div>
+  <div class="search-box">
+    <span class="s-icon">🔍</span>
+    <input type="search" id="zoek" placeholder="Zoeken…" autocomplete="off">
+  </div>
+</div>
+
+<div class="filter-bar" id="filterBar"><button class="filter-chip active" data-cat="">Alles</button><button class="filter-chip" data-cat="Abonnement">Abonnement</button><button class="filter-chip" data-cat="Auto">Auto</button><button class="filter-chip" data-cat="Bankzaken">Bankzaken</button><button class="filter-chip" data-cat="Belastingen">Belastingen</button><button class="filter-chip" data-cat="Computerapparatuur">Computerapparatuur</button><button class="filter-chip" data-cat="Fietsen">Fietsen</button><button class="filter-chip" data-cat="Opbrengsten">Opbrengsten</button><button class="filter-chip" data-cat="Reizen">Reizen</button><button class="filter-chip" data-cat="Telefoon">Telefoon</button><button class="filter-chip" data-cat="Testament">Testament</button><button class="filter-chip" data-cat="Verzekeringen">Verzekeringen</button><button class="filter-chip" data-cat="Wonen">Wonen</button></div>
+
+<div class="totalen"><div class="tot-card tc-blue"><div class="tot-label">📄 Overeenkomsten</div><div class="tot-value c-blue">56</div></div><div class="tot-card tc-red"><div class="tot-label">💳 Kosten / maand</div><div class="tot-value c-red">€ 1.034,60</div></div><div class="tot-card tc-red"><div class="tot-label">📅 Kosten / jaar</div><div class="tot-value c-red">€ 12.415,20</div></div><div class="tot-card tc-green"><div class="tot-label">⚖️ Saldo / jaar</div><div class="tot-value c-green">− 49.877,63</div></div><div class="tot-card tc-green"><div class="tot-label">💰 Opbrengsten / jaar</div><div class="tot-value c-green">− 62.292,83</div></div><div class="tot-card tc-red"><div class="tot-label">✅ Incidenteel betaald</div><div class="tot-value c-red">€ 9.409,45</div></div><div class="tot-card tc-amber"><div class="tot-label">⏳ Nog te betalen</div><div class="tot-value c-amber">€ 52.239,12</div></div></div>
+
+<div class="count-bar" id="countBar"></div>
+<div class="kaarten" id="kaarten"></div>
+
+<div class="backdrop" id="backdrop"></div>
+<div class="sheet" id="sheet">
+  <div class="s-handle"></div>
+  <div class="s-hdr"><h2 id="sheetTitle"></h2><button class="s-close" id="sheetClose">✕</button></div>
+  <div class="s-body" id="sheetBody"></div>
+</div>
+
+<script>
+const DATA = [{"id":"moh07i09gzt9","cat":"Abonnement","soort":"Staatsloterij","partij":"Staatsloterij","status":"Actief","maand":17.5,"netto":210,"verval":"","toelic":"Abonnement kan op elk moment worden opgezegd","web":"Https://staatsloterij.nederlandseloterij.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i0978io","cat":"Bankzaken","soort":"Bankrekening","partij":"Wise","status":"Actief","maand":0,"netto":0,"verval":"","toelic":"Geen periodieke kosten","web":"Https://Wise.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i090vxy","cat":"Bankzaken","soort":"Bankrekening","partij":"Knab","status":"Actief","maand":7,"netto":84,"verval":"","toelic":"","web":"https://Knab.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i09scg8","cat":"Opbrengsten","soort":"Bankrekening","partij":"Big Bank","status":"Actief","maand":0,"netto":-350,"verval":"2026-12-31","toelic":"Rente 2,05%","web":"https://www.bigbank.nl/","bet":0,"nog":0,"opb":350},{"id":"moh07i091vgb","cat":"Opbrengsten","soort":"Spaarrekening","partij":"Raisin/Distingo Bank","status":"Actief","maand":0,"netto":-473,"verval":"2026-12-31","toelic":"Rente 1,91% per jaar","web":"https://Raisin.com","bet":0,"nog":0,"opb":473},{"id":"moh07i09eqbu","cat":"Opbrengsten","soort":"Deposito","partij":"Raisin/CA Auto Bank","status":"Verlopen","maand":0,"netto":-1250,"verval":"","toelic":"","web":"https://Raisin.com","bet":0,"nog":0,"opb":1250},{"id":"moh07i091xfw","cat":"Opbrengsten","soort":"Deposito","partij":"Raisin/Klarna Bank","status":"Actief","maand":0,"netto":-625,"verval":"2026-05-17","toelic":"","web":"https://Raisin.com","bet":0,"nog":0,"opb":625},{"id":"moh07i09dxhr","cat":"Opbrengsten","soort":"Deposito","partij":"Raisin/Banca CF+","status":"Actief","maand":0,"netto":-2232.5,"verval":"2026-07-14","toelic":"","web":"https://Raisin.com","bet":0,"nog":0,"opb":2232.5},{"id":"moh07i093tce","cat":"Opbrengsten","soort":"Deposito","partij":"Raisin/OLB","status":"Actief","maand":0,"netto":-2080,"verval":"2027-09-04","toelic":"","web":"https://Raisin.com","bet":0,"nog":0,"opb":2080},{"id":"moh07i09f18p","cat":"Opbrengsten","soort":"Deposito","partij":"Raisin/Banca Progetto","status":"Actief","maand":0,"netto":-1992.4,"verval":"2026-10-27","toelic":"","web":"https://Raisin.com","bet":0,"nog":0,"opb":1992.4},{"id":"moh07i09etl4","cat":"Opbrengsten","soort":"Deposito","partij":"Raisin/Inbank","status":"Actief","maand":0,"netto":-1250,"verval":"2027-01-08","toelic":"","web":"https://Raisin.com","bet":0,"nog":0,"opb":1250},{"id":"moh07i097um3","cat":"Abonnement","soort":"Netflix","partij":"Netflix","status":"Actief","maand":9.99,"netto":119.88,"verval":"","toelic":"","web":"https://netflix.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i098fwj","cat":"Wonen","soort":"Water","partij":"Vitens","status":"Actief","maand":32,"netto":275.34000000000003,"verval":"","toelic":"terugontvangst 108,66 rond 29 april 2026","web":"https://vitens.nl","bet":0,"nog":0,"opb":108.66},{"id":"moh07i09795a","cat":"Wonen","soort":"Internet en TV","partij":"KPN","status":"Actief","maand":67.58,"netto":810.96,"verval":"2026-12-27","toelic":"","web":"https://KPN.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i099pyh","cat":"Wonen","soort":"Warmte","partij":"Vattenvahl","status":"Actief","maand":135,"netto":1421.01,"verval":"","toelic":"rond 6 mei € 198,99 terug","web":"https://www.vattenfall.nl/klantenservice/mijn-vattenfall-inloggen/","bet":0,"nog":0,"opb":198.99},{"id":"moh07i09wboj","cat":"Wonen","soort":"Electriciteit","partij":"Unitconsumers","status":"Actief","maand":17,"netto":204,"verval":"","toelic":"","web":"https://unitconsumers.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i0921lw","cat":"Verzekeringen","soort":"fietsverzekering","partij":"Unive","status":"Actief","maand":18,"netto":216,"verval":"","toelic":"Cube Kathmandu en Cube Tour","web":"https://Unive.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i091u13","cat":"Verzekeringen","soort":"Reizen","partij":"ING","status":"Actief","maand":10.55,"netto":126.60000000000001,"verval":"2026-06-26","toelic":"","web":"https://ING.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i09781w","cat":"Verzekeringen","soort":"Opstal","partij":"Fidus","status":"Actief","maand":17.94,"netto":215.28000000000003,"verval":"","toelic":"","web":"https://Unive.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i09bfoi","cat":"Verzekeringen","soort":"Bedrijfs- en beroepsaansprakelijkheid","partij":"Unive","status":"Opgezegd","maand":57,"netto":684,"verval":"","toelic":"","web":"https://Unive.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i098col","cat":"Verzekeringen","soort":"Inboedel","partij":"Fidus","status":"Actief","maand":14.72,"netto":176.64000000000001,"verval":"","toelic":"","web":"https://Fidus.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i09898c","cat":"Telefoon","soort":"Mobiele telefoon","partij":"KPN","status":"Actief","maand":18.11,"netto":217.32,"verval":"2026-06-04","toelic":"Samsung S24 Ultra, wordt opgezegd","web":"Https://KPN.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i09xgfg","cat":"Belastingen","soort":"Gemeente en waterschapsbelastingen","partij":"GBLT","status":"Actief","maand":41.84,"netto":502.08000000000004,"verval":"","toelic":"","web":"https://gblt.nl/","bet":0,"nog":0,"opb":0},{"id":"moh07i09xoaq","cat":"Abonnement","soort":"Krant","partij":"De Gelderlander","status":"Actief","maand":15.17,"netto":182.04,"verval":"2027-03-17","toelic":"","web":"https://www.gelderlander.nl/","bet":0,"nog":0,"opb":0},{"id":"moh07i09y1uh","cat":"Abonnement","soort":"e-boekhouden","partij":"SkillSource B.V","status":"Actief","maand":16.82,"netto":201.84,"verval":"","toelic":"","web":"https://www.e-boekhouden.nl/inloggen","bet":0,"nog":0,"opb":0},{"id":"moh07i09tuez","cat":"Belastingen","soort":"OZB/Afvalstoffenheffing","partij":"Gemeente Duiven","status":"Actief","maand":46.39,"netto":556.6800000000001,"verval":"","toelic":"Maandelijkse kosten voor 10 maanden","web":"https://www.duiven.nl/","bet":0,"nog":0,"opb":0},{"id":"moh07i09jom2","cat":"Verzekeringen","soort":"Aansprakelijkheid","partij":"Unive","status":"Actief","maand":8.34,"netto":100.08,"verval":"","toelic":"Particuliere verzekering voor 2 personen","web":"https://Unive.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i09mu8x","cat":"Verzekeringen","soort":"fietsverzekering","partij":"Unive","status":"Opgezegd","maand":5.08,"netto":60.96,"verval":"","toelic":"Brinkers fiets","web":"https://Unive.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i0955md","cat":"Verzekeringen","soort":"fietsverzekering","partij":"Unive","status":"Opgezegd","maand":5.08,"netto":60.96,"verval":"","toelic":"Cube fiets","web":"https://Unive.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i09z25e","cat":"Verzekeringen","soort":"Zorgverzekering","partij":"VinkVink","status":"Actief","maand":284.8,"netto":3417.6000000000004,"verval":"2026-12-31","toelic":"Betreft 2 personen met eigen risico van € 350,00 pp","web":"https://Vinkvink.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i09cfej","cat":"Bankzaken","soort":"Bankrekening","partij":"ING","status":"Actief","maand":3.9,"netto":46.8,"verval":"","toelic":"Kosten oranjepakket","web":"https://ING.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i09r1uo","cat":"Bankzaken","soort":"Bankrekening","partij":"ING","status":"Actief","maand":1.1,"netto":13.200000000000001,"verval":"","toelic":"Kosten 2e rekeninghouder","web":"https://Ing.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i09ngth","cat":"Belastingen","soort":"Motorrijtuigenbelasting","partij":"Belastingdienst","status":"Actief","maand":10.66,"netto":127.92,"verval":"","toelic":"Ford Ka 04-SN-XN","web":"https://www.belastingdienst.nl/wps/wcm/connect/nl/home/content/inloggen-mijn-belastingdienst","bet":0,"nog":0,"opb":0},{"id":"moh07i094ddk","cat":"Belastingen","soort":"Motorrijtuigenbelasting","partij":"Belastingdienst","status":"Actief","maand":26.33,"netto":315.96,"verval":"","toelic":"Toyota CHR RL-149-H","web":"https://www.belastingdienst.nl/wps/wcm/connect/nl/home/content/inloggen-mijn-belastingdienst","bet":0,"nog":0,"opb":0},{"id":"moh07i095joh","cat":"Verzekeringen","soort":"Autoverzekering","partij":"Inshared","status":"Actief","maand":21.76,"netto":261.12,"verval":"","toelic":"Ford Ka 04-SN-XN","web":"https://www.inshared.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i09hzdd","cat":"Verzekeringen","soort":"Autoverzekering","partij":"OPgroen","status":"Actief","maand":52.84,"netto":634.08,"verval":"","toelic":"Toyota CHR RL-149-H","web":"https://opgroen.nl","bet":0,"nog":0,"opb":0},{"id":"moh07i09ul41","cat":"Abonnement","soort":"Sporten","partij":"Aerofitt","status":"Actief","maand":46.85,"netto":562.2,"verval":"","toelic":"","web":"https://Aerofitt.nl","bet":0,"nog":0,"opb":0},{"id":"moi9mnl5n9yd","cat":"Abonnement","soort":"Mobiele telefoon","partij":"Lebara","status":"Actief","maand":7.75,"netto":93,"verval":"","toelic":"","web":"","bet":0,"nog":0,"opb":0},{"id":"moi9vlskh29u","cat":"Reizen","soort":"Reis Sardinie","partij":"Vliegtickets","status":"Actief","maand":0,"netto":0,"verval":"","toelic":"","web":"https://vliegtickets.nl","bet":346.26,"nog":0,"opb":0},{"id":"moia044kl589","cat":"Reizen","soort":"Reis Sardinie","partij":"Vliegveld Weeze","status":"Actief","maand":0,"netto":0,"verval":"","toelic":"Kosten parkeren vliegveld Weeze van 12 t/m 19 mei 2026","web":"https://airport-Weeze.com/nl","bet":92,"nog":0,"opb":0},{"id":"moia3e9nfxo5","cat":"Reizen","soort":"Reis Sardinie","partij":"Booking.com","status":"Actief","maand":0,"netto":0,"verval":"","toelic":"","web":"https://Booking.com","bet":107,"nog":500,"opb":0},{"id":"moicu1uym0bl","cat":"Opbrengsten","soort":"Deposito","partij":"Big Bank","status":"Actief","maand":0,"netto":-1530,"verval":"2027-05-04","toelic":"Deposito nog af te sluiten","web":"https://www.bigbank.nl/","bet":0,"nog":0,"opb":1530},{"id":"moidkz18ftm2","cat":"Bankzaken","soort":"Bankrekening","partij":"Rabobank","status":"Actief","maand":0,"netto":0,"verval":"","toelic":"","web":"https://rabobank.nl","bet":0,"nog":0,"opb":0},{"id":"mojp232ww6fr","cat":"Abonnement","soort":"Loterij","partij":"Kika loterij","status":"Actief","maand":12.5,"netto":150,"verval":"","toelic":"Tot wederopzegging","web":"https://www.kikaloterij.nl/?gad_source=1&gad_campaignid=20063217981&gbraid=0AAAAApjiiNAofZ54wDq2L_zlSbu0x6-rm&gclid=CjwKCAjwtcHPBhADEiwAWo3sJmOvvGUqnzaFs8irtpcO8lhpetNX_U9wt5vWNT4mw2ZxxAM2-jq8iBo","bet":0,"nog":0,"opb":0},{"id":"mojp5vkouxng","cat":"Computerapparatuur","soort":"Eenmalige aankoop muis","partij":"Paradigit","status":"Actief","maand":0,"netto":0,"verval":"","toelic":"","web":"","bet":66,"nog":0,"opb":0},{"id":"mojpa4pzg5ds","cat":"Testament","soort":"Testamenten","partij":"NuNotariaat","status":"Actief","maand":0,"netto":0,"verval":"","toelic":"Testament en levenstestament","web":"","bet":1050,"nog":0,"opb":0},{"id":"mojpcobeamjh","cat":"Fietsen","soort":"Cube fietsen","partij":"Liemers fietsem","status":"Actief","maand":0,"netto":0,"verval":"","toelic":"Cube Kathmandu  en Cube Tour","web":"","bet":5199.95,"nog":0,"opb":0},{"id":"mojpgzbeu9a0","cat":"Wonen","soort":"Zitkussens","partij":"Tuinkussenshop","status":"Actief","maand":0,"netto":0,"verval":"","toelic":"Kussens voor tuinstoelen","web":"","bet":148.75,"nog":0,"opb":0},{"id":"mojpl0bmh5oi","cat":"Wonen","soort":"Meterkast","partij":"Louwmans","status":"Actief","maand":0,"netto":0,"verval":"","toelic":"","web":"","bet":1259.49,"nog":0,"opb":0},{"id":"mojpn9k9754x","cat":"Wonen","soort":"Koelkast","partij":"Keukenloods","status":"Actief","maand":0,"netto":0,"verval":"","toelic":"","web":"","bet":632,"nog":0,"opb":0},{"id":"mojpq0oighmy","cat":"Auto","soort":"Vervoer","partij":"Kia Kooijman Tiel","status":"Actief","maand":0,"netto":0,"verval":"","toelic":"Inclusief € 400 meerkosten tussen Zaptec Go en Zaptec go 2","web":"","bet":0,"nog":50648.12,"opb":0},{"id":"mok4v7c3cse0","cat":"Reizen","soort":"Cruise Middenlandse Zee","partij":"CruiseTravel","status":"Actief","maand":0,"netto":0,"verval":"","toelic":"Van 11 oktober tot 18 oktober. Vertrek vanuit Barcelona. Cruisenummer 113923","web":"https://www.cruisetravel.nl/login/welkom/","bet":508,"nog":1091,"opb":0},{"id":"mol5tnzsn8pj","cat":"Opbrengsten","soort":"Pensioen","partij":"ABP","status":"Actief","maand":0,"netto":-39329.88,"verval":"","toelic":"Met ingang van 30 augustus 2025","web":"https://ABP.nl","bet":0,"nog":0,"opb":0},{"id":"mol5zp1n7neh","cat":"Opbrengsten","soort":"AOW","partij":"Sociale Verzekeringsbank","status":"Actief","maand":0,"netto":-10872.400000000001,"verval":"","toelic":"Incidentele opbrengsten betreft vakantiegeld aug t/m april 2026","web":"","bet":0,"nog":0,"opb":460},{"id":"moo5y3fr5xb2","cat":"Abonnement","soort":"Mobiele telefoon","partij":"5Q+Mobiel","status":"In onderhandeling","maand":2.5,"netto":30,"verval":"","toelic":"1e jaar 2,50 per maand, 2e jaar 7,50 per maand","web":"","bet":0,"nog":0,"opb":0},{"id":"mosgzha319f2","cat":"Abonnement","soort":"Mobiele telefoon","partij":"5Q+MOBIEL","status":"In onderhandeling","maand":2.5,"netto":30,"verval":"2028-06-04","toelic":"Porteringsdatum 4 juni 2026. Kosten 1e jaar 2,50 en 2e jaar 7,50","web":"HTTPS://5Q+Mobiel.nl","bet":0,"nog":0,"opb":0}];
+
+const fmt = v => {
+  const n = parseFloat(v);
+  if(!v&&v!==0||isNaN(n)||n===0) return '—';
+  const p = Math.abs(n).toFixed(2).split('.');
+  p[0] = p[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  return '\u20ac\u00a0'+p[0]+','+p[1];
+};
+const esc  = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const fdt  = s => { if(!s) return '—'; const[y,m,d]=s.split('-'); return d+'-'+m+'-'+y; };
+const diff = v => v ? Math.round((new Date(v)-new Date().setHours(0,0,0,0))/86400000) : null;
+const sbCls= s => s==='Actief'?'sb-g':s==='Opgezegd'?'sb-r':s==='In onderhandeling'?'sb-o':'sb-x';
+
+let activeCat = '';
+
+// Filter chips
+document.getElementById('filterBar').addEventListener('click', function(e) {
+  const chip = e.target.closest('.filter-chip');
+  if (!chip) return;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  activeCat = chip.dataset.cat;
+  render();
+});
+
+// Zoeken
+document.getElementById('zoek').addEventListener('input', render);
+
+// Sheet sluiten
+document.getElementById('backdrop').addEventListener('click', closeSheet);
+document.getElementById('sheetClose').addEventListener('click', closeSheet);
+
+function render() {
+  const q = document.getElementById('zoek').value.toLowerCase();
+  const rows = DATA.filter(r => {
+    if (activeCat && r.cat !== activeCat) return false;
+    if (q) {
+      const all = [r.cat,r.soort,r.partij,r.status,r.toelic].join(' ').toLowerCase();
+      if (!all.includes(q)) return false;
+    }
+    return true;
+  }).sort((a,b) => a.cat<b.cat?-1:a.cat>b.cat?1:a.soort<b.soort?-1:a.soort>b.soort?1:0);
+
+  document.getElementById('countBar').textContent = rows.length + ' van ' + DATA.length + ' overeenkomsten';
+
+  if (!rows.length) {
+    document.getElementById('kaarten').innerHTML = '<div class="leeg"><div class="leeg-icon">\uD83D\uDCC2</div>Geen overeenkomsten gevonden.</div>';
+    return;
+  }
+
+  document.getElementById('kaarten').innerHTML = rows.map(r => {
+    const d = diff(r.verval);
+    let rowCls='', vLbl='';
+    if(d!==null){
+      if(d<0){rowCls='exp';vLbl=`<span class="v-lbl exp">\u26a0 Verlopen ${Math.abs(d)}d geleden</span>`;}
+      else if(d<=30){rowCls='soon';vLbl=`<span class="v-lbl soon">\u26a0 ${fdt(r.verval)} \u00b7 ${d}d</span>`;}
+      else{vLbl=`<span class="v-lbl">${fdt(r.verval)}</span>`;}
+    }
+    const bedrag = r.netto<0
+      ? `<span class="k-bedrag groen">\u2212\u00a0${fmt(Math.abs(r.netto)).slice(3)}</span>`
+      : r.maand ? `<span class="k-bedrag">${fmt(r.maand)}/mnd</span>`
+      : r.opb   ? `<span class="k-bedrag groen">\u2212\u00a0${fmt(r.opb).slice(3)}</span>`
+      : r.bet   ? `<span class="k-bedrag">${fmt(r.bet)}</span>`
+      : '';
+    return `<div class="kaart ${rowCls}" data-id="${r.id}">
+      <div class="kaart-top">
+        <span class="k-cat">${esc(r.cat)}</span>
+        <div class="k-midden">
+          <div class="k-soort">${esc(r.soort)}</div>
+          <div class="k-partij">${esc(r.partij)}</div>
+        </div>
+        ${bedrag}
+      </div>
+      <div class="kaart-footer">
+        <span class="sbadge ${sbCls(r.status)}">${esc(r.status)}</span>
+        ${vLbl}
+      </div>
+      ${r.toelic?`<div class="k-toelic">${esc(r.toelic)}</div>`:''}
+    </div>`;
+  }).join('');
+
+  // Klik-handler via delegatie
+  document.getElementById('kaarten').onclick = function(e) {
+    const k = e.target.closest('.kaart');
+    if (k) openSheet(k.dataset.id);
+  };
+}
+
+function openSheet(id) {
+  const r = DATA.find(x=>x.id===id); if(!r) return;
+  const d = diff(r.verval);
+  let vTxt = fdt(r.verval);
+  if(d!==null){
+    if(d<0) vTxt+=` (\u26a0 ${Math.abs(d)}d verlopen)`;
+    else if(d===0) vTxt+=' (\u26a0 vandaag!)';
+    else if(d<=30) vTxt+=` (nog ${d} dagen)`;
+  }
+
+  document.getElementById('sheetTitle').textContent = r.soort||r.cat;
+
+  const rw = (l,v) => v&&v!=='\u2014'?`<span class="dt">${l}</span><span class="dd">${v}</span>`:'';
+  let h = '<div class="dl">';
+  h += rw('Categorie',   esc(r.cat));
+  h += rw('Soort',       esc(r.soort));
+  h += rw('Partij',      esc(r.partij));
+  h += rw('Status',      esc(r.status));
+  h += rw('Vervaldatum', vTxt!=='\u2014'?vTxt:'');
+  h += rw('Toelichting', esc(r.toelic));
+  h += '</div>';
+
+  if(r.maand||r.netto){
+    h += '<div class="s-sectie">\uD83D\uDCB3 Kosten</div><div class="dl">';
+    h += rw('Per maand', fmt(r.maand));
+    const nettoTxt = r.netto<0
+      ? '\u2212\u00a0'+fmt(Math.abs(r.netto)).slice(3)+' (opbrengst)'
+      : fmt(r.netto);
+    h += rw('Saldo per jaar', nettoTxt);
+    h += '</div>';
+  }
+  if(r.opb){
+    h += '<div class="s-sectie">\uD83D\uDCB0 Opbrengst</div><div class="dl">';
+    h += rw('Opbrengst/jaar','\u2212\u00a0'+fmt(r.opb).slice(3));
+    h += '</div>';
+  }
+  if(r.bet||r.nog){
+    h += '<div class="s-sectie">\uD83D\uDCCB Incidenteel</div><div class="dl">';
+    if(r.bet) h += rw('Betaald', fmt(r.bet));
+    if(r.nog) h += rw('Nog te betalen', fmt(r.nog));
+    h += '</div>';
+  }
+  if(r.web){
+    h += '<div class="s-sectie">\uD83D\uDD17 Website</div>';
+    h += `<a href="${esc(r.web)}" target="_blank" style="font-size:.88rem;color:var(--accent2);word-break:break-all">${esc(r.web)}</a>`;
+  }
+
+  document.getElementById('sheetBody').innerHTML = h;
+  document.getElementById('sheet').classList.add('open');
+  document.getElementById('backdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSheet() {
+  document.getElementById('sheet').classList.remove('open');
+  document.getElementById('backdrop').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+render();
+</script>
+</body></html>
